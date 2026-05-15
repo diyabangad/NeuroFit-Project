@@ -85,7 +85,7 @@ Mood labels supported:
 | Name | Role | GitHub |
 |------|------|--------|
 | Diya Bangad | ML + Backend | [@diyabangad](https://github.com/diyabangad) |
-| [Digvijay Nandan] | Frontend + Firebase | [@username](https://github.com/digvijaynandan) |
+| Digvijay Nandan | Frontend + Firebase | [@digvijaynandan](https://github.com/digvijaynandan) |
 
 ---
 

@@ -48,11 +48,9 @@ This project is a simple Flask + Streamlit app that records audio from your brow
 3. Open the browser link shown by Streamlit.
 4. Allow microphone access, speak into the mic, and click **Analyze Mood**.
 
-## Screenshot (working app)
+## 📸 Live Demo
 
-_Add your screenshot here:_
-
-`![NeuroFit working screenshot](path/to/your-screenshot.png)`
+![NeuroFit dashboard — mood detected as Happy, confidence 1.0](screenshot.jpeg)
 
 ## Notes
 

@@ -1,11 +1,11 @@
 # NeuroFit — Voice Mood Detection App
 
-This project is a simple Flask + Streamlit app that lets you upload a WAV audio file, transcribes the speech, and detects mood using sentiment analysis.
+This project is a simple Flask + Streamlit app that records audio from your browser microphone, transcribes the speech, and detects mood using sentiment analysis.
 
 ## Project structure
 
 - `backend/app.py` — Flask API that receives audio and returns mood results
-- `frontend/app.py` — Streamlit UI for uploading WAV files and displaying the analysis
+- `frontend/app.py` — Streamlit UI for recording audio in the browser and displaying the analysis
 - `ml_model/whisper_mood_pipeline.py` — transcription + sentiment pipeline
 - `backend/requirements.txt` — backend dependencies
 - `frontend/requirements.txt` — frontend dependencies
@@ -46,11 +46,18 @@ This project is a simple Flask + Streamlit app that lets you upload a WAV audio 
    streamlit run frontend\app.py
    ```
 3. Open the browser link shown by Streamlit.
-4. Upload a WAV file and click **Analyze Mood**.
+4. Allow microphone access, speak into the mic, and click **Analyze Mood**.
+
+## Screenshot (working app)
+
+_Add your screenshot here:_
+
+`![NeuroFit working screenshot](path/to/your-screenshot.png)`
 
 ## Notes
 
-- The frontend accepts WAV audio uploads only.
+- The frontend records audio in the browser using your microphone.
 - The backend uses Whisper for transcription and sentiment classification.
 - If you have issues installing packages, make sure Python and pip are correctly configured.
+
 

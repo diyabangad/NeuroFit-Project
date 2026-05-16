@@ -1,2 +1,7 @@
 streamlit
 requests
+streamlit-webrtc==0.63.3
+soundfile
+numpy
+tornado
+streamlit-mic-recorder

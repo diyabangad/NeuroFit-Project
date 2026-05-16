@@ -2,6 +2,7 @@ import os
 import tempfile
 import streamlit as st
 import requests
+from streamlit_mic_recorder import mic_recorder
 
 st.set_page_config(
     page_title="NeuroFit Voice Dashboard",
@@ -10,38 +11,56 @@ st.set_page_config(
 )
 
 st.title("🎤 NeuroFit Voice Dashboard")
-st.markdown("Upload a WAV audio file and analyze your mood.")
+st.markdown("Record a short message using the browser recorder, then analyze mood and transcription.")
 
-uploaded_file = st.file_uploader("Upload WAV audio", type=["wav"])
-if uploaded_file is not None:
-    st.audio(uploaded_file, format="audio/wav")
-    if st.button("Analyze Mood"):
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_input:
-            temp_input.write(uploaded_file.read())
-            temp_path = temp_input.name
+audio = mic_recorder(
+    start_prompt="🎙️ Start Recording",
+    stop_prompt="🛑 Stop & Analyze",
+    just_once=True,
+    use_container_width=True,
+)
 
-        try:
-            with open(temp_path, "rb") as f:
-                response = requests.post("http://127.0.0.1:5000/analyze", files={"file": f})
+if audio and "bytes" in audio:
+    st.info("Audio recorded. Sending to backend for processing...")
 
-            if response.status_code == 200:
-                result = response.json()
-                st.subheader("📝 Transcription")
-                st.write(result.get("transcription", ""))
+    # Save recorded bytes to a temp WAV file and send
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+        tmp.write(audio["bytes"])
+        tmp_path = tmp.name
 
-                st.subheader("📊 Sentiment Analysis")
-                st.write(f"**Sentiment:** {result.get('sentiment', 'unknown')} \n**Confidence:** {result.get('confidence', 0)}")
+    try:
+        with open(tmp_path, "rb") as f:
+            response = requests.post("http://127.0.0.1:5000/analyze", files={"file": f})
 
-                st.subheader("🎶 Suggested Playlist")
-                playlist = result.get("spotify_playlist")
-                if playlist:
-                    st.markdown(f"[Open Playlist 🎵]({playlist})")
+        if response.status_code == 200:
+            result = response.json()
+            st.success("✅ Analysis complete")
+            st.subheader("📝 Transcription")
+            transcription = result.get("transcription", "")
+            if transcription:
+                st.write(transcription)
             else:
-                st.error(f"Backend error: {response.text}")
-        except requests.exceptions.RequestException as e:
-            st.error(f"Unable to reach backend: {e}")
-        finally:
-            try:
-                os.remove(temp_path)
-            except OSError:
-                pass
+                st.info("No transcription returned from the backend.")
+                st.json(result)
+
+            st.subheader("📊 Mood Analysis")
+            st.write(
+                f"**Mood:** {result.get('mood', 'unknown')}\n"
+                f"**Sentiment:** {result.get('sentiment', 'unknown')}\n"
+                f"**Confidence:** {result.get('confidence', 0)}"
+            )
+
+            playlist = result.get("spotify_playlist")
+            if playlist:
+                st.markdown(f"[Open Playlist 🎵]({playlist})")
+        else:
+            st.error(f"Backend error: {response.text}")
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Unable to reach backend: {e}")
+
+    finally:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass

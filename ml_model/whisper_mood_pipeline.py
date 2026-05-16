@@ -1,6 +1,13 @@
+import os
 import torch
 import whisper
 from transformers import pipeline
+
+# Optional Vosk fallback
+try:
+    from ml_model.hello import transcribe_audio as vosk_transcribe
+except Exception:
+    vosk_transcribe = None
 
 # Load Whisper model (for transcription)
 print("🔁 Loading Whisper model... (this may take a minute)")
@@ -21,10 +28,25 @@ def process_audio_file(file_path):
     3. Map sentiment → mood + Spotify playlist
     """
 
-    # Step 1: Transcribe audio
-    print(f"🎙️ Transcribing: {file_path}")
-    result = whisper_model.transcribe(file_path)
-    text = result["text"].strip()
+    # Step 1: Transcribe audio with Whisper
+    print(f"🎙️ Transcribing with Whisper: {file_path}")
+    try:
+        result = whisper_model.transcribe(file_path)
+        text = result.get("text", "").strip()
+    except Exception as e:
+        print("⚠️ Whisper transcription error:", e)
+        text = ""
+
+    # If Whisper returned empty transcription and Vosk is available, try Vosk
+    if (not text) and vosk_transcribe is not None:
+        try:
+            print("🔁 Whisper returned empty; falling back to Vosk...")
+            vosk_text = vosk_transcribe(file_path)
+            if vosk_text:
+                text = vosk_text.strip()
+                print("✅ Vosk fallback transcription obtained.")
+        except Exception as e:
+            print("⚠️ Vosk fallback failed:", e)
 
     # Step 2: Sentiment analysis
     if text:

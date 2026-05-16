@@ -120,7 +120,6 @@ Open `http://localhost:8501` in your browser.
 ## 🚧 Roadmap
 
 - [ ] Firebase integration for mood history and trend analytics
-- [ ] Real-time audio streaming instead of recorded clips
 - [ ] Dedicated multi-class emotion classifier (beyond positive/negative)
 - [ ] Multilingual support via Whisper large model
 - [ ] Mobile-responsive UI
